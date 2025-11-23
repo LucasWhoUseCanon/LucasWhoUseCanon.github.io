@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的摄影网站</title>
     <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "微软雅黑", sans-serif;
+        }
+
         /* 密码页面样式 */
         .password-container {
             display: flex;
@@ -14,11 +24,18 @@
             height: 100vh;
             background-color: #f0f0f0;
         }
+        .password-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            cursor: pointer; /* 提示“请”字可点击 */
+        }
         .password-input {
             padding: 10px;
             font-size: 18px;
             margin: 10px 0;
             width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
         .submit-btn {
             padding: 10px 20px;
@@ -26,7 +43,9 @@
             background-color: #4CAF50;
             color: white;
             border: none;
+            border-radius: 4px;
             cursor: pointer;
+            transition: background 0.3s;
         }
         .submit-btn:hover {
             background-color: #45a049;
@@ -37,6 +56,26 @@
             display: none;
         }
 
+        /* 私密空间密码框（默认隐藏） */
+        .secret-password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .secret-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
         /* 摄影页面样式 */
         .gallery-container {
             display: none;
@@ -44,10 +83,39 @@
             max-width: 1200px;
             margin: 0 auto;
         }
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
         .gallery-title {
-            text-align: center;
             font-size: 32px;
-            margin-bottom: 30px;
+        }
+        /* 上传按钮样式 */
+        .upload-section {
+            position: relative;
+        }
+        .upload-btn {
+            padding: 8px 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .upload-btn:hover {
+            background-color: #1976D2;
+        }
+        .upload-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
         }
         .photo-grid {
             display: grid;
@@ -58,52 +126,102 @@
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .photo-item:hover {
+            transform: translateY(-5px);
         }
         .photo-item img {
             width: 100%;
             height: 250px;
             object-fit: cover;
-            transition: transform 0.3s;
-        }
-        .photo-item img:hover {
-            transform: scale(1.05);
         }
         .photo-desc {
             padding: 10px;
             text-align: center;
             background-color: white;
         }
+
+        /* 私密空间页面样式 */
+        .secret-container {
+            display: none;
+            height: 100vh;
+            background: #222;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .secret-title {
+            font-size: 36px;
+            margin-bottom: 30px;
+        }
+        .secret-content {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+        /* 返回按钮样式 */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 8px 16px;
+            background-color: #666;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background-color: #888;
+        }
     </style>
 </head>
 <body>
-    <!-- 密码输入界面 -->
+    <!-- 主密码输入界面 -->
     <div class="password-container">
-        <h2>请输入访问密码</h2>
+        <h2 class="password-title">
+            <span class="secret-trigger">请</span>输入访问密码
+        </h2>
         <input type="password" class="password-input" placeholder="输入密码">
         <button class="submit-btn">进入</button>
         <div class="error-msg">密码错误，请重试</div>
     </div>
 
-    <!-- 摄影作品展示页面 -->
+    <!-- 私密空间密码弹窗（隐藏） -->
+    <div class="secret-password-modal">
+        <div class="secret-modal-content">
+            <h3>请输入私密空间密码</h3>
+            <input type="password" class="secret-password-input" placeholder="输入私密密码" style="margin:15px 0;">
+            <button class="secret-submit-btn">确认</button>
+            <div class="secret-error-msg" style="color:red;display:none;margin-top:10px;">密码错误</div>
+        </div>
+    </div>
+
+    <!-- 摄影作品展示页面（含上传功能） -->
     <div class="gallery-container">
-        <h1 class="gallery-title">我的摄影作品</h1>
-        <div class="photo-grid">
-            <!-- 示例作品1 -->
+        <div class="gallery-header">
+            <h1 class="gallery-title">我的摄影作品</h1>
+            <div class="upload-section">
+                <button class="upload-btn">上传新作品</button>
+                <input type="file" class="upload-input" accept="image/*" multiple>
+            </div>
+        </div>
+        <div class="photo-grid" id="photoGrid">
+            <!-- 初始示例作品 -->
             <div class="photo-item">
                 <img src="https://picsum.photos/id/1015/600/400" alt="自然风光">
                 <div class="photo-desc">山间溪流 · 2024.05</div>
             </div>
-            <!-- 示例作品2 -->
             <div class="photo-item">
                 <img src="https://picsum.photos/id/1025/600/400" alt="城市夜景">
                 <div class="photo-desc">城市霓虹 · 2024.08</div>
             </div>
-            <!-- 示例作品3 -->
             <div class="photo-item">
                 <img src="https://picsum.photos/id/1035/600/400" alt="人文纪实">
                 <div class="photo-desc">街头瞬间 · 2024.09</div>
             </div>
-            <!-- 示例作品4 -->
             <div class="photo-item">
                 <img src="https://picsum.photos/id/1043/600/400" alt="静物特写">
                 <div class="photo-desc">咖啡时光 · 2024.10</div>
@@ -111,33 +229,221 @@
         </div>
     </div>
 
+    <!-- 私密空间页面 -->
+    <div class="secret-container">
+        <button class="back-btn">返回主界面</button>
+        <h1 class="secret-title">私密空间</h1>
+        <div class="secret-content">
+            <p>这里可以放置仅自己可见的内容：</p>
+            <p>比如未公开的摄影作品、私人笔记等</p>
+            <img src="https://picsum.photos/id/1074/800/400" alt="私密作品" style="margin:20px auto;max-width:100%;border-radius:8px;">
+        </div>
+    </div>
+
     <script>
-        // 获取元素
+        // 核心配置（已填入你的凭证）
+        const IMGBB_API_KEY = '4340e149852177b4f1902b99c0b46049';
+        const GITHUB_TOKEN = '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';
+        const GITHUB_USERNAME = '你的GitHub用户名'; // 替换为你的GitHub用户名（如xxx）
+        const GITHUB_REPO = '你的仓库名'; // 替换为你的仓库名（如xxx.github.io）
+
+        // 元素获取
         const passwordInput = document.querySelector('.password-input');
         const submitBtn = document.querySelector('.submit-btn');
         const errorMsg = document.querySelector('.error-msg');
         const passwordContainer = document.querySelector('.password-container');
         const galleryContainer = document.querySelector('.gallery-container');
+        const secretTrigger = document.querySelector('.secret-trigger');
+        const secretModal = document.querySelector('.secret-password-modal');
+        const secretPasswordInput = document.querySelector('.secret-password-input');
+        const secretSubmitBtn = document.querySelector('.secret-submit-btn');
+        const secretErrorMsg = document.querySelector('.secret-error-msg');
+        const secretContainer = document.querySelector('.secret-container');
+        const backBtn = document.querySelector('.back-btn');
+        const uploadInput = document.querySelector('.upload-input');
+        const photoGrid = document.getElementById('photoGrid');
 
-        // 密码验证逻辑
+        // 页面加载时自动加载所有已保存的作品
+        window.addEventListener('load', () => {
+            loadPhotosFromGitHub();
+        });
+
+        // 1. 私密空间触发：连续点击“请”字3次
+        let clickCount = 0;
+        secretTrigger.addEventListener('click', () => {
+            clickCount++;
+            if (clickCount === 3) {
+                secretModal.style.display = 'flex';
+                clickCount = 0;
+            }
+        });
+
+        // 2. 主密码验证（0905）
         submitBtn.addEventListener('click', () => {
             const inputPassword = passwordInput.value.trim();
             if (inputPassword === '0905') {
-                // 密码正确，切换页面
                 passwordContainer.style.display = 'none';
                 galleryContainer.style.display = 'block';
             } else {
-                // 密码错误，显示提示
                 errorMsg.style.display = 'block';
                 passwordInput.value = '';
             }
         });
 
-        // 支持回车键提交
-        passwordInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                submitBtn.click();
+        // 3. 私密空间密码验证（0613）
+        secretSubmitBtn.addEventListener('click', () => {
+            const secretInput = secretPasswordInput.value.trim();
+            if (secretInput === '0613') {
+                secretModal.style.display = 'none';
+                passwordContainer.style.display = 'none';
+                secretContainer.style.display = 'block';
+            } else {
+                secretErrorMsg.style.display = 'block';
+                secretPasswordInput.value = '';
             }
+        });
+
+        // 4. 返回按钮逻辑
+        backBtn.addEventListener('click', () => {
+            secretContainer.style.display = 'none';
+            passwordContainer.style.display = 'flex';
+            passwordInput.value = '';
+            secretPasswordInput.value = '';
+        });
+
+        // 5. 图片上传功能（前端+后端存储整合）
+        uploadInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (files.length === 0) return;
+
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) {
+                    alert('请上传图片文件！');
+                    continue;
+                }
+
+                // 构建表单数据
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('key', IMGBB_API_KEY);
+
+                // 调用ImgBB API上传（后端存储）
+                fetch('https://api.imgbb.com/1/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const imgUrl = data.data.url;
+                        const now = new Date();
+                        const dateStr = `${now.getFullYear()}.${now.getMonth() + 1}`;
+
+                        // 前端实时显示
+                        renderPhotoItem(imgUrl, dateStr);
+                        // 永久保存到GitHub
+                        saveToGitHub(imgUrl, dateStr);
+                        alert('上传成功！');
+                    } else {
+                        alert('上传失败：' + data.error.message);
+                    }
+                })
+                .catch(error => {
+                    alert('网络错误，上传失败');
+                    console.error(error);
+                });
+            }
+            uploadInput.value = '';
+        });
+
+        // 6. 渲染照片项
+        function renderPhotoItem(imgUrl, desc) {
+            const photoItem = document.createElement('div');
+            photoItem.className = 'photo-item';
+            photoItem.innerHTML = `
+                <img src="${imgUrl}" alt="摄影作品">
+                <div class="photo-desc">${desc}</div>
+            `;
+            photoGrid.appendChild(photoItem);
+        }
+
+        // 7. 保存图片信息到GitHub（永久存储）
+        function saveToGitHub(imgUrl, desc) {
+            const filePath = 'photos.json';
+
+            // 先获取现有文件
+            fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${filePath}`, {
+                headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            })
+            .then(res => {
+                if (res.status === 404) return { content: '', sha: '' }; // 文件不存在
+                return res.json();
+            })
+            .then(existingData => {
+                // 解析现有照片列表
+                const existingPhotos = existingData.content
+                    ? JSON.parse(atob(existingData.content))
+                    : [];
+
+                // 添加新照片
+                existingPhotos.push({
+                    url: imgUrl,
+                    desc: desc,
+                    time: new Date().toISOString()
+                });
+
+                // 提交到GitHub
+                return fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${filePath}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Add new photo: ${desc}`,
+                        content: btoa(JSON.stringify(existingPhotos)),
+                        sha: existingData.sha
+                    })
+                });
+            })
+            .then(res => {
+                if (!res.ok) console.error('保存到GitHub失败');
+            })
+            .catch(err => console.error('GitHub API错误：', err));
+        }
+
+        // 8. 从GitHub加载所有照片（页面刷新后不丢失）
+        function loadPhotosFromGitHub() {
+            const filePath = 'photos.json';
+
+            fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${filePath}`, {
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            })
+            .then(res => {
+                if (res.status === 404) return null; // 无保存的照片
+                return res.json();
+            })
+            .then(data => {
+                if (!data) return;
+                const photos = JSON.parse(atob(data.content));
+                photos.forEach(photo => {
+                    renderPhotoItem(photo.url, photo.desc);
+                });
+            })
+            .catch(err => console.error('加载照片失败：', err));
+        }
+
+        // 9. 回车键支持
+        passwordInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') submitBtn.click();
+        });
+        secretPasswordInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') secretSubmitBtn.click();
         });
     </script>
 </body>
