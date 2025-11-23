@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的摄影网站</title>
+    <style>
+        /* 密码页面样式 */
+        .password-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .password-input {
+            padding: 10px;
+            font-size: 18px;
+            margin: 10px 0;
+            width: 200px;
+        }
+        .submit-btn {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .error-msg {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* 摄影页面样式 */
+        .gallery-container {
+            display: none;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .gallery-title {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 30px;
+        }
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .photo-item {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .photo-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .photo-item img:hover {
+            transform: scale(1.05);
+        }
+        .photo-desc {
+            padding: 10px;
+            text-align: center;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 密码输入界面 -->
+    <div class="password-container">
+        <h2>请输入访问密码</h2>
+        <input type="password" class="password-input" placeholder="输入密码">
+        <button class="submit-btn">进入</button>
+        <div class="error-msg">密码错误，请重试</div>
+    </div>
+
+    <!-- 摄影作品展示页面 -->
+    <div class="gallery-container">
+        <h1 class="gallery-title">我的摄影作品</h1>
+        <div class="photo-grid">
+            <!-- 示例作品1 -->
+            <div class="photo-item">
+                <img src="https://picsum.photos/id/1015/600/400" alt="自然风光">
+                <div class="photo-desc">山间溪流 · 2024.05</div>
+            </div>
+            <!-- 示例作品2 -->
+            <div class="photo-item">
+                <img src="https://picsum.photos/id/1025/600/400" alt="城市夜景">
+                <div class="photo-desc">城市霓虹 · 2024.08</div>
+            </div>
+            <!-- 示例作品3 -->
+            <div class="photo-item">
+                <img src="https://picsum.photos/id/1035/600/400" alt="人文纪实">
+                <div class="photo-desc">街头瞬间 · 2024.09</div>
+            </div>
+            <!-- 示例作品4 -->
+            <div class="photo-item">
+                <img src="https://picsum.photos/id/1043/600/400" alt="静物特写">
+                <div class="photo-desc">咖啡时光 · 2024.10</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取元素
+        const passwordInput = document.querySelector('.password-input');
+        const submitBtn = document.querySelector('.submit-btn');
+        const errorMsg = document.querySelector('.error-msg');
+        const passwordContainer = document.querySelector('.password-container');
+        const galleryContainer = document.querySelector('.gallery-container');
+
+        // 密码验证逻辑
+        submitBtn.addEventListener('click', () => {
+            const inputPassword = passwordInput.value.trim();
+            if (inputPassword === '0905') {
+                // 密码正确，切换页面
+                passwordContainer.style.display = 'none';
+                galleryContainer.style.display = 'block';
+            } else {
+                // 密码错误，显示提示
+                errorMsg.style.display = 'block';
+                passwordInput.value = '';
+            }
+        });
+
+        // 支持回车键提交
+        passwordInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                submitBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
